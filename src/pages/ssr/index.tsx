@@ -1,4 +1,5 @@
 import { GetServerSideProps } from "next";
+import Link from "next/link";
 
 interface Props {
   formattedDate?: string;
@@ -15,7 +16,7 @@ export default function Page({ formattedDate }: Props) {
         This page is server-side rendered. It was rendered on {formattedDate}.
       </p>
       <p>
-        <a href="/">View a static page.</a>
+        <Link href="/">View a static page.</Link>
       </p>
     </div>
   );
