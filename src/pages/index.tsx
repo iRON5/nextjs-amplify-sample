@@ -1,15 +1,28 @@
 import Image from 'next/image'
-import styles from './page.module.css'
+import styles from '@cfm/features/page.module.css'
+import { useCallback, useState } from 'react';
 
 interface Props {
-  formattedDate: string;
+  formattedDate?: string;
 }
 
 export default function Home({ formattedDate }: Props) {
+  const [count, setCount] = useState(0);
+
+  const action = useCallback(() => {
+    fetch(`/api/v1/inc/${count}`)
+      .then(res => res.json())
+      .then(data => setCount(data.count))
+      .catch(err => {
+        console.error(err);
+        setCount(0);
+      });
+  }, [count, setCount]);
+
   return (
     <main className={styles.main}>
       <div className={styles.description}>
-        <span>Date: {formattedDate}</span>
+        <button onClick={action}>Counter: {count}</button>
         <p>
           Get started by editing&nbsp;
           <code className={styles.code}>src/app/page.tsx</code>
@@ -99,12 +112,12 @@ export default function Home({ formattedDate }: Props) {
   )
 }
 
-export async function getStaticProps() {
-  const buildDate = Date.now();
-  const formattedDate = new Intl.DateTimeFormat("en-US", {
-    dateStyle: "long",
-    timeStyle: "long",
-  }).format(buildDate);
+export const getStaticProps = async () => {
+  const data = await fetch(`http://worldtimeapi.org/api/timezone/Europe/Berlin`);
 
-  return { props: { formattedDate } };
-}
+  return {
+    props: {
+      formattedDate: (await data.json()).datetime
+    }
+  };
+};
